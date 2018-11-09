@@ -1,5 +1,6 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
+import "./index.css";
 
 const ITEMS = [
     {"name": "Item1", "isDone": false},
@@ -45,48 +46,28 @@ class NewItem extends React.Component {
     }
 }
 
-class Item extends React.Component {
-    constructor(props) {
-        super(props);
-        this.state = {
-            style: {"textDecoration": ""}
-        }
-        this.updateDone = this.updateDone.bind(this);
-    }
+function Item(props) {        
+    return (
+        <li onClick = {props.onClick} className = {props.className}>
+            {props.item.name}
+        </li>
+    );
 
-    updateDone() {
-        this.props.onClick();
-        this.props.item.isDone ? 
-            this.setState({style: {"textDecoration": "line-through"}})
-            : this.setState({style: {"textDecoration": ""}})        
-    }
-
-    render() {
-        return (
-            <li style = {this.state.style} onClick = {() => this.updateDone()}>{this.props.item.name}</li>
-        );
-    }
 } 
         
 
-class TodoItemsList extends React.Component {
-    constructor(props) {
-        super(props);
-        this.handleClick = this.handleClick.bind(this);
-    }
+class TodoItemsList extends React.Component {    
 
-    handleClick(item){
-        // cross out the item name
-        this.props.clickOnItem(item);
-        
+    handleClick(item){              
+        this.props.clickOnItem(item);        
     }
-
     render() {
         const items = this.props.items.map((item, index) => 
             <Item 
                 key = {index} 
                 item = {item}
                 onClick = {() => this.handleClick(item)}
+                className = {item.isDone ? "itemDone" : "itemNotDone"}                
             />
         );
         return(
@@ -99,7 +80,7 @@ class App extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
-            items: ITEMS
+            items: ITEMS,            
         };
         this.addItem = this.addItem.bind(this);
         this.clickOnItem = this.clickOnItem.bind(this);
@@ -111,14 +92,11 @@ class App extends React.Component {
         );        
     }
 
-    clickOnItem(i) {
-        // in the item change the isDone to reversed value
-        // replace the element in the Items list
-
+    clickOnItem(i) {        
         const items = this.state.items;
-        const index = items.indexOf(i);
-        items[index] = updateDone(i);//createNewItem(items[index].name, !items[index].isDone);
-
+        const position = items.indexOf(i);
+        items[position] = updateDone(i);
+        
         this.setState({
             items: items
         });

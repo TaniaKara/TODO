@@ -1,0 +1,7 @@
+.itemNotDone {
+    text-decoration: "";
+}
+
+.itemDone {
+    text-decoration: line-through;
+}

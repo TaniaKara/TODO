@@ -1,15 +1,19 @@
-async function f() {
 
-    let promise = new Promise((resolve, reject) => {
-        setTimeout(() => resolve("done!"), 1000);
-    });
+const obj1 = {
+    constructor(){
+        this.f1 = this.f1.bind(this);
+    },
+    name: "tania",    
+    f1() {
+        console.log(this.name);
+    }
+};
 
-    let result = await promise;
-   
+obj1.f1();
 
-    console.log(result);
 
-    console.log("hello");
+const obj2 = {
+    name: "shawky",
+    o: obj1
 }
 
-f();
