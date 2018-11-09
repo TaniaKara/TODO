@@ -22,7 +22,8 @@ class NewItem extends React.Component {
     handleClick(event) {
         event.preventDefault();
         const newItem = createNewItem(this.state.value);             
-        this.props.addItem(newItem);        
+        this.props.addItem(newItem);    
+        this.setState({value: ""});
     }    
 
     render() {
@@ -44,11 +45,50 @@ class NewItem extends React.Component {
     }
 }
 
-const Item = (props) => <li>{props.item.name}</li>;    
+class Item extends React.Component {
+    constructor(props) {
+        super(props);
+        this.state = {
+            style: {"textDecoration": ""}
+        }
+        this.updateDone = this.updateDone.bind(this);
+    }
+
+    updateDone() {
+        this.props.onClick();
+        this.props.item.isDone ? 
+            this.setState({style: {"textDecoration": "line-through"}})
+            : this.setState({style: {"textDecoration": ""}})        
+    }
+
+    render() {
+        return (
+            <li style = {this.state.style} onClick = {() => this.updateDone()}>{this.props.item.name}</li>
+        );
+    }
+} 
+        
 
 class TodoItemsList extends React.Component {
+    constructor(props) {
+        super(props);
+        this.handleClick = this.handleClick.bind(this);
+    }
+
+    handleClick(item){
+        // cross out the item name
+        this.props.clickOnItem(item);
+        
+    }
+
     render() {
-        const items = this.props.items.map((item, index) => <Item key = {index} item = {item}/>);
+        const items = this.props.items.map((item, index) => 
+            <Item 
+                key = {index} 
+                item = {item}
+                onClick = {() => this.handleClick(item)}
+            />
+        );
         return(
             <ul>{items}</ul>
         );
@@ -62,6 +102,7 @@ class App extends React.Component {
             items: ITEMS
         };
         this.addItem = this.addItem.bind(this);
+        this.clickOnItem = this.clickOnItem.bind(this);
     } 
 
     addItem(item) {        
@@ -70,11 +111,25 @@ class App extends React.Component {
         );        
     }
 
+    clickOnItem(i) {
+        // in the item change the isDone to reversed value
+        // replace the element in the Items list
+
+        const items = this.state.items;
+        const index = items.indexOf(i);
+        items[index] = updateDone(i);//createNewItem(items[index].name, !items[index].isDone);
+
+        this.setState({
+            items: items
+        });
+        
+    }
+
     render() {
         return (
             <div>
                 <NewItem items = {this.state.items} addItem = {this.addItem}/>
-                <TodoItemsList items = {this.state.items}/>
+                <TodoItemsList items = {this.state.items} clickOnItem = {this.clickOnItem}/>
             </div>
         );
     }
@@ -90,4 +145,8 @@ function createNewItem(name, isDone = false) {
         name, 
         isDone
     };
+}
+
+function updateDone(item) {
+    return createNewItem(item.name, !item.isDone)
 }
