@@ -52,26 +52,56 @@ function Item(props) {
             {props.item.name}
         </li>
     );
-
 } 
-        
 
-class TodoItemsList extends React.Component {    
+function DoneItems(props) {
+    const doneItems = props.items.map((item, index) => 
+        <Item key = {index} 
+            item = {item} 
+            onClick = {() => props.clickOnItem(item)} 
+            className = "itemDone"/>
+    );
+    return (
+        <ul>{doneItems}</ul>        
+    );
+}
 
+function NotDoneItems(props) {
+    const notDoneItems = props.items.map((item, index) => 
+        <Item key = {index} 
+            item = {item} 
+            onClick = {() => props.clickOnItem(item)} 
+            className = "itemNotDone"/>
+    );
+    return (        
+        <ul>{notDoneItems}</ul>
+    );
+}
+
+function RemoveItem(props) {
+    return (
+        <button onClick = {props.removeDoneItems}>Remove Done</button>
+    );
+}
+
+class TodoItemsList extends React.Component {
+    constructor(props) {
+        super(props);
+        this.handleClick = this.handleClick.bind(this);
+    }
     handleClick(item){              
         this.props.clickOnItem(item);        
     }
     render() {
-        const items = this.props.items.map((item, index) => 
-            <Item 
-                key = {index} 
-                item = {item}
-                onClick = {() => this.handleClick(item)}
-                className = {item.isDone ? "itemDone" : "itemNotDone"}                
-            />
-        );
+        const doneItems = this.props.items.filter(item => item.isDone);
+        const notDoneItems = this.props.items.filter(item => !item.isDone);        
+     
         return(
-            <ul>{items}</ul>
+            <div>
+                <NotDoneItems items = {notDoneItems} clickOnItem = {this.handleClick}/>
+                <hr />
+                <DoneItems items = {doneItems} clickOnItem = {this.handleClick}/>    
+            </div>
         );
     }
 }
@@ -84,6 +114,7 @@ class App extends React.Component {
         };
         this.addItem = this.addItem.bind(this);
         this.clickOnItem = this.clickOnItem.bind(this);
+        this.removeDoneItems = this.removeDoneItems.bind(this);
     } 
 
     addItem(item) {        
@@ -100,7 +131,13 @@ class App extends React.Component {
         this.setState({
             items: items
         });
-        
+    }
+
+    removeDoneItems() {        
+        const newItems = this.state.items.filter(item => !item.isDone)
+        this.setState({
+            items: newItems
+        });
     }
 
     render() {
@@ -108,6 +145,7 @@ class App extends React.Component {
             <div>
                 <NewItem items = {this.state.items} addItem = {this.addItem}/>
                 <TodoItemsList items = {this.state.items} clickOnItem = {this.clickOnItem}/>
+                <RemoveItem items = {this.state.items} removeDoneItems = {this.removeDoneItems}/>
             </div>
         );
     }
